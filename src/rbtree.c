@@ -320,7 +320,7 @@ rbnode_t* rbtree_next(rbnode_t* node)
 void rbtree_insert(rbnode_t** root, rbnode_t* node, rbnode_compare_fn compare)
 {
     rbnode_t* current;
-    rbnode_t* parent;
+    rbnode_t* parent = 0;
 
     current = *root;
 

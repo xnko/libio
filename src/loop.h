@@ -26,7 +26,7 @@
 extern "C" {
 #endif
 
-#include "../include/io.h"
+#include "io.h"
 #include "mpscq.h"
 #include "moment.h"
 #include "platform.h"

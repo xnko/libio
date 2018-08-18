@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="src\task">
+      <UniqueIdentifier>{2d7f6cec-2b27-4433-987c-bb8ad66b290d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\io.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="src\atomic.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\event.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\fs.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\io.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\list.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\loop.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\memory.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\moment.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mpscq.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\performance.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pool.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\rbtree.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stopwatch.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stream.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\task.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tcp.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\thread.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\threadpool.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\time.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\task\386-ucontext.h">
+      <Filter>src\task</Filter>
+    </ClInclude>
+    <ClInclude Include="src\task\amd64-ucontext.h">
+      <Filter>src\task</Filter>
+    </ClInclude>
+    <ClInclude Include="src\task\context.h">
+      <Filter>src\task</Filter>
+    </ClInclude>
+    <ClInclude Include="src\task\mips-ucontext.h">
+      <Filter>src\task</Filter>
+    </ClInclude>
+    <ClInclude Include="src\task\power-ucontext.h">
+      <Filter>src\task</Filter>
+    </ClInclude>
+    <ClInclude Include="src\task\win-ucontext.h">
+      <Filter>src\task</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\event.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\loop.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\loop-win.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\memory.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\moment.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pool.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rbtree.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stopwatch.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stream.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stream-windows.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\thread.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\threadpool.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\time.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\task\task.c">
+      <Filter>src\task</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\task\asm.s">
+      <Filter>src\task</Filter>
+    </None>
+    <None Include="src\task\win64.asm">
+      <Filter>src\task</Filter>
+    </None>
+  </ItemGroup>
+</Project>

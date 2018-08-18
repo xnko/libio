@@ -32,7 +32,8 @@ extern "C" {
 
 #   define  WIN32_LEAN_AND_MEAN 1
 #   include <Windows.h>
-#   define IO_THREAD_TYPE unsigned int __stdcall
+#   define IO_THREAD_FN(fn) unsigned int (__stdcall*fn)
+#	define IO_THREAD_TYPE unsigned int __stdcall
 
 typedef CRITICAL_SECTION io_mutex_t;
 typedef CONDITION_VARIABLE io_condition_t;
@@ -80,7 +81,8 @@ static FORCEINLINE void io_condition_wait(io_condition_t* condition, io_mutex_t*
 #else
 
 #   include <pthread.h>
-#   define IO_THREAD_TYPE void*
+#   define IO_THREAD_FN(fn) void* (*fn)
+#	define IO_THREAD_TYPE void*
 
 typedef pthread_mutex_t io_mutex_t;
 typedef pthread_cond_t io_condition_t;
@@ -127,7 +129,7 @@ static FORCEINLINE void io_condition_wait(io_condition_t* condition, io_mutex_t*
 
 #endif
 
-typedef IO_THREAD_TYPE (*thread_fn)(void* arg);
+typedef IO_THREAD_FN(thread_fn)(void* arg);
 
 int io_thread_create(thread_fn entry, void* arg);
 

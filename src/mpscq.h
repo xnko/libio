@@ -23,7 +23,7 @@
 #define IO_MPSCQ_H_INCLUDED
 
 #include "platform.h"
-#if PLATFORM_WINDOWS == 1
+#if PLATFORM_WINDOWS
 #   include <WinBase.h> // InterlockedExchangePointerAcquire
 #endif
 

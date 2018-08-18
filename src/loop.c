@@ -19,6 +19,7 @@
  * IN THE SOFTWARE.
  */
 
+#include <errno.h>
 #include "loop.h"
 #include "atomic.h"
 #include "memory.h"
@@ -159,7 +160,7 @@ int io_loop_sleep(uint64_t milliseconds)
 
     if (moment.shutdown)
     {
-        return ESHUTDOWN;
+        return ECANCELED;
     }
     
     // Reached
@@ -187,7 +188,7 @@ int io_loop_idle(io_loop_t* loop, uint64_t milliseconds)
 
     if (moment.shutdown)
     {
-        return ESHUTDOWN;
+        return ECANCELED;
     }
 
     // Reached

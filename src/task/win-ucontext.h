@@ -29,13 +29,13 @@ typedef struct ucontext_t {
     size_t  stack_size;
 } ucontext_t;
 
-__declspec(noinline) int __stdcall getcontext(ucontext_t* ctx)
+static __declspec(noinline) int __stdcall getcontext(ucontext_t* ctx)
 {
     RtlCaptureContext(&ctx->uc);
     return 0;
 }
 
-__declspec(noinline) void __stdcall setcontext(ucontext_t* ctx)
+static __declspec(noinline) void __stdcall setcontext(ucontext_t* ctx)
 {
 #if defined (_WIN64)
 	RtlRestoreContext((PCONTEXT)&ctx->uc, 0);
@@ -44,7 +44,7 @@ __declspec(noinline) void __stdcall setcontext(ucontext_t* ctx)
 #endif
 }
 
-void makecontext(ucontext_t* ctx, void(*callback)(), int argc, ...)
+static void makecontext(ucontext_t* ctx, void(*callback)(), int argc, ...)
 {
     va_list arguments;
     size_t* sp = (size_t*)(ctx->stack + ctx->stack_size);
@@ -77,7 +77,7 @@ void makecontext(ucontext_t* ctx, void(*callback)(), int argc, ...)
 
 #if defined (_WIN64)
 
-__declspec(noinline) void __stdcall fix_and_swapcontext(
+static __declspec(noinline) void __stdcall fix_and_swapcontext(
 	ucontext_t* from,
 	ucontext_t* to,
 	DWORD64 ip,
@@ -95,10 +95,10 @@ extern void __stdcall swapcontext(ucontext_t* from, const ucontext_t* to);
 
 #else
 
-const int offset_eip = (int)(&((CONTEXT*)0)->Eip);
-const int offset_esp = (int)(&((CONTEXT*)0)->Esp);
+static const int offset_eip = (int)(&((CONTEXT*)0)->Eip);
+static const int offset_esp = (int)(&((CONTEXT*)0)->Esp);
 
-int __stdcall swapcontext(ucontext_t* oucp, ucontext_t* ucp)
+static int __stdcall swapcontext(ucontext_t* oucp, ucontext_t* ucp)
 {
     __asm {
 

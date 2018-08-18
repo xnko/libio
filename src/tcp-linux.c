@@ -166,7 +166,7 @@ static void io_tcp_listener_processor(io_tcp_listener_t* listener, int events)
 
     if (events == -1)
     {
-        listener->accept->error = ESHUTDOWN;
+        listener->accept->error = ECANCELED;
     }
     else if (events & EPOLLERR)
     {
@@ -233,7 +233,7 @@ int io_tcp_listen(io_tcp_listener_t** listener, const char* ip, int port, int ba
 
     if (atomic_load64(&loop->shutdown))
     {
-        return ESHUTDOWN;
+        return ECANCELED;
     }
 
     *listener = io_calloc(1, sizeof(io_tcp_listener_t));
@@ -335,13 +335,13 @@ int io_tcp_accept(io_stream_t** tcp, io_tcp_listener_t* listener)
 
     if (listener->shutdown)
     {
-        return ESHUTDOWN;
+        return ECANCELED;
     }
 
     if (atomic_load64(&listener->loop->shutdown))
     {
         listener->shutdown = 1;
-        return ESHUTDOWN;
+        return ECANCELED;
     }
 
     stream = io_calloc(1, sizeof(*stream));
@@ -391,7 +391,7 @@ int io_tcp_connect(io_stream_t** tcp, const char* ip, int port, uint64_t tmeout)
 
     if (atomic_load64(&loop->shutdown))
     {
-        return ESHUTDOWN;
+        return ECANCELED;
     }
 
     stream = io_calloc(1, sizeof(*stream));
@@ -511,7 +511,7 @@ int io_tcp_connect(io_stream_t** tcp, const char* ip, int port, uint64_t tmeout)
 
     if (!error && stream->info.status.shutdown)
     {
-        error = ESHUTDOWN;
+        error = ECANCELED;
     }
 
     if (error)

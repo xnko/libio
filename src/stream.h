@@ -26,7 +26,6 @@
 extern "C" {
 #endif
 
-#include <aio.h>
 #include <memory.h> // memcpy
 #include "io.h"
 #include "loop.h"

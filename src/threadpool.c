@@ -73,6 +73,8 @@ IO_THREAD_TYPE io_threadpool_worker(void* arg)
 
         work->entry(work);
     }
+
+	return 0;
 }
 
 int io_threadpool_init()

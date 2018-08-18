@@ -19,6 +19,7 @@
  * IN THE SOFTWARE.
  */
 
+#include <aio.h>
 #include "memory.h"
 #include "stream.h"
 #include "time.h"
@@ -620,7 +621,7 @@ static int io_stream_attach(io_stream_t* stream)
     {
         stream->info.status.shutdown = 1;
         stream->filters.head->on_status(stream->filters.head);
-        return ESHUTDOWN;
+        return ECANCELED;
     }
 
     if (stream->info.type == IO_STREAM_TCP)

@@ -78,7 +78,9 @@ static io_event_processor_t processor;
 
 IO_THREAD_TYPE io_event_processor(void* arg)
 {
+#if PLATFORM_LINUX
     uint64_t counter;
+#endif
     mpscq_node_t* node;
     io_event_command_t* command;
     io_event_waiter_t* waiter;
@@ -144,6 +146,8 @@ IO_THREAD_TYPE io_event_processor(void* arg)
             command = container_of(node, io_event_command_t, node);
         }
     }
+
+	return 0;
 }
 
 int io_event_command(io_event_command_t* command)
@@ -207,6 +211,8 @@ int io_event_shutdown()
 #else
 #   error Not Supported
 #endif
+
+	return 0;
 }
 
 /*

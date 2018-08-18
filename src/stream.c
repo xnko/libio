@@ -56,7 +56,7 @@ int io_stream_pipe(io_stream_t* from, io_stream_t* to, size_t chunk_size, size_t
         while (n_read > 0)
         {
             n_wrote = io_stream_write(to, buffer, n_read);
-            n_transferred + n_wrote;
+            n_transferred += n_wrote;
 
             if (n_wrote < n_read)
             {
