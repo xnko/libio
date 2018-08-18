@@ -37,20 +37,30 @@ __declspec(noinline) int __stdcall getcontext(ucontext_t* ctx)
 
 __declspec(noinline) void __stdcall setcontext(ucontext_t* ctx)
 {
+#if defined (_WIN64)
+	RtlRestoreContext((PCONTEXT)&ctx->uc, 0);
+#else
     SetThreadContext(GetCurrentThread(), &ctx->uc);
+#endif
 }
 
 void makecontext(ucontext_t* ctx, void(*callback)(), int argc, ...)
 {
     va_list arguments;
     size_t* sp = (size_t*)(ctx->stack + ctx->stack_size);
+    size_t arg;
+    size_t task;
     int n;
 
     va_start(arguments, argc);
 
     for (n = 0; n < argc; ++n)
     {
-        *(sp - n - 1) = va_arg(arguments, size_t);
+        arg = va_arg(arguments, size_t);
+        *(sp - n - 1) = arg;
+
+        if (n == 0)
+            task = arg;
     }
 
     va_end(arguments);
@@ -58,6 +68,7 @@ void makecontext(ucontext_t* ctx, void(*callback)(), int argc, ...)
 #if defined (_WIN64)
     ctx->uc.Rip = (size_t)callback;
     ctx->uc.Rsp = (size_t)(sp - argc - 1);
+    ctx->uc.Rcx = task;
 #else
     ctx->uc.Eip = (size_t)callback;
     ctx->uc.Esp = (size_t)(sp - argc - 1);
@@ -66,10 +77,21 @@ void makecontext(ucontext_t* ctx, void(*callback)(), int argc, ...)
 
 #if defined (_WIN64)
 
-// const int offset_eip = (int)(&((CONTEXT*)0)->Rip);
-// const int offset_esp = (int)(&((CONTEXT*)0)->Rsp);
+__declspec(noinline) void __stdcall fix_and_swapcontext(
+	ucontext_t* from,
+	ucontext_t* to,
+	DWORD64 ip,
+	DWORD64 sp)
+{
+	getcontext(from);
 
-extern int __stdcall swapcontext(ucontext_t*, const ucontext_t*);
+	from->uc.Rip = ip;
+	from->uc.Rsp = sp;
+
+	setcontext(to);
+}
+
+extern void __stdcall swapcontext(ucontext_t* from, const ucontext_t* to);
 
 #else
 

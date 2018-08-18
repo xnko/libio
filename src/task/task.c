@@ -119,31 +119,45 @@ static void* task_create_stack(size_t size)
         page_size = task_get_page_size();
     }
 
-    void* vp = VirtualAlloc(0, size, MEM_RESERVE, PAGE_READWRITE);
-    if (!vp)
-    {
-        errno = ENOMEM;
-        return 0;
-    }
+	// auto grow doesn't work as expected, commiting whole stack 
+	void* vp = VirtualAlloc(0, size, MEM_COMMIT, PAGE_READWRITE);
+	if (!vp)
+	{
+		errno = ENOMEM;
+		return 0;
+	}
 
-    // needs at least 2 pages to fully construct the coroutine and switch to it
-    size_t init_commit_size = page_size + page_size;
-    char* pPtr = ((char*)vp) + size;
-    pPtr -= init_commit_size;
-    if (!VirtualAlloc(pPtr, init_commit_size, MEM_COMMIT, PAGE_READWRITE))
-        goto cleanup;
+	return vp;
 
-    // create guard page so the OS can catch page faults and grow our stack
-    pPtr -= page_size;
-    if (VirtualAlloc(pPtr, page_size, MEM_COMMIT, PAGE_READWRITE|PAGE_GUARD))
-        return vp;
-
-cleanup:
-
-    VirtualFree(vp, 0, MEM_RELEASE);
-    
-    errno = ENOMEM;
-    return 0;
+//    void* vp = VirtualAlloc(0, size, MEM_RESERVE, PAGE_READWRITE);
+//    if (!vp)
+//    {
+//        errno = ENOMEM;
+//        return 0;
+//    }
+//
+//    // needs at least 2 pages to fully construct the coroutine and switch to it
+//    size_t init_commit_size = page_size + page_size;
+//    char* pPtr = ((char*)vp) + size;
+//    pPtr -= init_commit_size;
+//	if (!VirtualAlloc(pPtr, init_commit_size, MEM_COMMIT, PAGE_READWRITE))
+//	{
+//		goto cleanup;
+//	}
+//
+//    // create guard page so the OS can catch page faults and grow our stack
+//    pPtr -= page_size;
+//	if (VirtualAlloc(pPtr, page_size, MEM_COMMIT, PAGE_READWRITE | PAGE_GUARD))
+//	{
+//		return vp;
+//	}
+//
+//cleanup:
+//
+//    VirtualFree(vp, 0, MEM_RELEASE);
+//    
+//    errno = ENOMEM;
+//    return 0;
 }
 
 static void task_delete_stack(void* stack, size_t size)

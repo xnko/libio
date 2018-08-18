@@ -1,34 +1,55 @@
 IFDEF RAX
 
-getcontext PROTO STDCALL :QWORD
-setcontext PROTO STDCALL :QWORD
-
-; ToDo: replace magic numbers with CONTEXT structure field offset calculations
-offset_rip equ 252
-offset_rsp equ 156
+fix_and_swapcontext PROTO STDCALL :QWORD
 
 .code
 
 swapcontext PROC
-	push [rsp + 8]
-	call getcontext
 
-	; correct rip
-	lea rax, [rsp + 8]
-	add rax, offset_rip
-	lea rdx, done
-	mov [rax], rdx
+	push r8
+	push r9
+	push rdi
+	push rsi
+	push rbp
+	push rdx ; other
+	push rcx ; current
 
-	; correct rsp
-	lea rax, [rsp + 8]
-	add rax, offset_rsp
-	mov [rax], rsp
+	lea r8, gotback
+	mov r9, rsp
 
-	push [rsp + 16]
-	call setcontext
-done:
-	add rsp, 16
+	; without some stack padding someone overrides our values, no idea why?
+	push rax
+	push rax
+	push rax
+	push rax
+	push rax
+	push rax
+	push rax
+	push rax
+	push rax
+	push rax
+	push rax
+	push rax
+	push rax
+	push rax
+	push rax
+	push rax
+	push rax
+	push rax
+
+	call fix_and_swapcontext
+
+gotback:
+
+	pop rcx
+	pop rdx
+	pop rbp
+	pop rsi
+	pop rdi
+	pop r9
+	pop r8
 	ret
+
 swapcontext ENDP
 
 ENDIF
