@@ -69,7 +69,9 @@ IO_THREAD_TYPE io_threadpool_worker(void* arg)
         io_mutex_unlock(&threadpool.mutex);
 
         if (atomic_load64(&threadpool.shutdown))
+        {
             break;
+        }
 
         work->entry(work);
     }
@@ -98,6 +100,7 @@ int io_threadpool_shutdown()
     atomic_store64(&threadpool.shutdown, 1);
 
     // ToDo: Wait for threads
+    // ToDo: notify works about shutdown
 
     io_condition_destroy(&threadpool.condition);
     io_mutex_destroy(&threadpool.mutex);
@@ -115,7 +118,9 @@ int io_threadpool_post(io_work_t* work)
     LIST_PUSH_TAIL((&threadpool), work)
 
     if (threadpool.idle_threads > 0)
+    {
         io_condition_signal(&threadpool.condition);
+    }
 
     io_mutex_unlock(&threadpool.mutex);
 
