@@ -20,11 +20,11 @@ clean:
 
 install: all
 	install -d $(DESTDIR)$(PREFIX)/lib/
-	install -m 644 bin/libtask.so $(DESTDIR)$(PREFIX)/lib/
+	install -m 644 bin/libio.so $(DESTDIR)$(PREFIX)/lib/
 	install -d $(DESTDIR)$(PREFIX)/include/
-	mkdir -p $(DESTDIR)$(PREFIX)/include/task
-	install -m 644 include/task.h $(DESTDIR)$(PREFIX)/include/task/
+	mkdir -p $(DESTDIR)$(PREFIX)/include/io
+	install -m 644 include/io.h $(DESTDIR)$(PREFIX)/include/io/
 
 uninstall:
-	$(RM) $(DESTDIR)$(PREFIX)/lib/libtask.so
-	$(RM) $(DESTDIR)$(PREFIX)/include/task
+	$(RM) $(DESTDIR)$(PREFIX)/lib/libio.so
+	$(RM) $(DESTDIR)$(PREFIX)/include/io
