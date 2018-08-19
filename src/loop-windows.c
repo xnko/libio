@@ -24,15 +24,6 @@
 #include "moment.h"
 #include "atomic.h"
 
-#if IO_BUILD_SHARED
-
-BOOL WINAPI DllMain(HINSTANCE hDll, DWORD dwReason, LPVOID lpReserved)
-{
-    return TRUE;
-}
-
-#endif
-
 DECLARE_THREAD_LOCAL(io_loop_t*, loop, 0);
 
 typedef struct io_handle_t {

@@ -186,7 +186,7 @@ IO_API int io_directory_create(const char* path);
 IO_API int io_directory_delete(const char* path, int recursive);
 IO_API int io_directory_listen(const char* path, const char* pattern, int events, uint64_t timeout);
 IO_API int io_directory_enum_create(io_directory_enum_t** enm, const char* path);
-IO_API int io_directory_enum_next(io_directory_enum_t* enm, const char** name, io_path_info_t* info);
+IO_API int io_directory_enum_next(io_directory_enum_t* enm, const char** name);
 IO_API int io_directory_enum_delete(io_directory_enum_t* enm);
 
 

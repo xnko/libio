@@ -24,6 +24,15 @@
 #include "threadpool.h"
 #include "tcp.h"
 
+#if IO_BUILD_SHARED
+
+BOOL WINAPI DllMain(HINSTANCE hDll, DWORD dwReason, LPVOID lpReserved)
+{
+    return TRUE;
+}
+
+#endif
+
 int io_run(io_loop_fn entry, void* arg)
 {
 	int error;
