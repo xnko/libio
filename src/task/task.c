@@ -28,6 +28,22 @@
 
 #include <malloc.h>
 
+#if defined (_WIN64)
+__declspec(noinline) void __stdcall fix_and_swapcontext(
+	ucontext_t* from,
+	ucontext_t* to,
+	DWORD64 ip,
+	DWORD64 sp)
+{
+	getcontext(from);
+
+	from->uc.Rip = ip;
+	from->uc.Rsp = sp;
+
+	setcontext(to);
+}
+#endif
+
 static uintptr_t task_default_stack_size = 0;
 
 static uintptr_t task_get_default_stack_size()
@@ -41,8 +57,11 @@ static uintptr_t task_get_default_stack_size()
     return task_default_stack_size;
 }
 
-static void task_entry_point(struct task_t* task)
+static void task_entry_point()
 {
+	io_loop_t* loop = io_loop_current();
+	task_t* task = loop->current;
+
     task->entry(task->loop, task->arg);
     task->is_done = 1;
     task->loop->prev = task;

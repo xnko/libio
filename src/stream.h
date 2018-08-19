@@ -38,7 +38,7 @@ typedef struct io_memory_chunk_t {
 typedef struct io_stream_t {
     struct {
 #if PLATFORM_WINDOWS
-        void(*processor)(struct io_stream_t* stream, DWORD transferred,
+        void(*processor)(void* handle, DWORD transferred,
                  OVERLAPPED* overlapped, io_loop_t* loop, DWORD error);
         OVERLAPPED read;
         OVERLAPPED write;
@@ -51,7 +51,11 @@ typedef struct io_stream_t {
         void* read_req;
         void* write_req;
     } platform;
-    int fd;
+#if PLATFORM_WINDOWS
+    HANDLE fd;
+#else
+	int fd;
+#endif
     io_stream_info_t info;
     io_loop_t* loop;
     io_filter_t operations;
@@ -99,6 +103,7 @@ static size_t io_stream_read_exact(io_stream_t* stream, char* buffer, size_t len
 }
 
 void io_stream_init(io_stream_t* stream);
+int io_stream_attach(io_stream_t* stream);
 
 #ifdef __cplusplus
 } // extern "C"

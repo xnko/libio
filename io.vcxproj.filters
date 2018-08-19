@@ -103,9 +103,6 @@
     <ClCompile Include="src\loop.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\loop-win.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\memory.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -138,6 +135,15 @@
     </ClCompile>
     <ClCompile Include="src\task\task.c">
       <Filter>src\task</Filter>
+    </ClCompile>
+    <ClCompile Include="src\loop-windows.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tcp-windows.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fs-windows.c">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

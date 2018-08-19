@@ -218,6 +218,15 @@ static void io_tcp_connect_processor(io_stream_t* stream, int events)
 }
 
 /*
+ * Internal API
+ */
+
+int io_tcp_init()
+{
+    return 0;
+}
+
+/*
  * Public API
  */
 
@@ -237,6 +246,10 @@ int io_tcp_listen(io_tcp_listener_t** listener, const char* ip, int port, int ba
     }
 
     *listener = io_calloc(1, sizeof(io_tcp_listener_t));
+    if (*listener == 0)
+    {
+        return ENOMEM;
+    }
 
     if (strchr(ip, ':') == 0)
     {

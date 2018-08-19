@@ -46,50 +46,18 @@ static __declspec(noinline) void __stdcall setcontext(ucontext_t* ctx)
 
 static void makecontext(ucontext_t* ctx, void(*callback)(), int argc, ...)
 {
-    va_list arguments;
     size_t* sp = (size_t*)(ctx->stack + ctx->stack_size);
-    size_t arg;
-    size_t task;
-    int n;
-
-    va_start(arguments, argc);
-
-    for (n = 0; n < argc; ++n)
-    {
-        arg = va_arg(arguments, size_t);
-        *(sp - n - 1) = arg;
-
-        if (n == 0)
-            task = arg;
-    }
-
-    va_end(arguments);
 
 #if defined (_WIN64)
     ctx->uc.Rip = (size_t)callback;
-    ctx->uc.Rsp = (size_t)(sp - argc - 1);
-    ctx->uc.Rcx = task;
+    ctx->uc.Rsp = (size_t)(sp - 1);
 #else
     ctx->uc.Eip = (size_t)callback;
-    ctx->uc.Esp = (size_t)(sp - argc - 1);
+    ctx->uc.Esp = (size_t)(sp - 1);
 #endif
 }
 
 #if defined (_WIN64)
-
-static __declspec(noinline) void __stdcall fix_and_swapcontext(
-	ucontext_t* from,
-	ucontext_t* to,
-	DWORD64 ip,
-	DWORD64 sp)
-{
-	getcontext(from);
-
-	from->uc.Rip = ip;
-	from->uc.Rsp = sp;
-
-	setcontext(to);
-}
 
 extern void __stdcall swapcontext(ucontext_t* from, const ucontext_t* to);
 

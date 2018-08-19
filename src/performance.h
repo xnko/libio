@@ -37,8 +37,8 @@ typedef struct counter_t {
 typedef struct performance_t {
     counter_t memory_alloc;
     counter_t memory_free;
-    counter_t task_contextswitch;
-    counter_t loop_crosspost;
+    counter_t task_swapcontext;
+    counter_t loop_post;
     counter_t loop_idle;
     counter_t file_open;
     counter_t file_create;
@@ -46,6 +46,7 @@ typedef struct performance_t {
     counter_t file_write;
     counter_t tcp_read;
     counter_t tcp_write;
+	counter_t tcp_connect;
     counter_t time_current;
     counter_t threadpool_post;
     counter_t event_watch;

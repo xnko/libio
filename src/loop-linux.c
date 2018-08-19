@@ -39,59 +39,6 @@ typedef struct io_handle_t {
     void(*processor)(struct io_handle_t* handle, int events);
 } io_handle_t;
 
-typedef struct io_exec_t {
-    io_loop_t* source_loop;
-    task_t* source_task;
-    io_loop_fn entry;
-    void* arg;
-} io_exec_t;
-
-static void io_exec_entry(io_loop_t* loop, io_exec_t* exec)
-{
-    exec->entry(loop, exec->arg);
-
-    mpscq_push(&exec->source_loop->tasks, &exec->source_task->node);
-    io_loop_wakeup(exec->source_loop);
-}
-
-static FORCEINLINE task_t* io_loop_fetch_next_task(io_loop_t* loop)
-{
-    mpscq_node_t* node;
-    task_t* task;
-    
-    node = mpscq_pop(&loop->tasks);
-    task = (struct task_t*)((char*)node - offsetof(task_t, node));
-
-    return task;
-}
-
-static FORCEINLINE void io_loop_process_tasks(io_loop_t* loop)
-{
-    task_t* task;
-    int error;
-
-    task = io_loop_fetch_next_task(loop);
-    while (task != 0)
-    {
-        if (task->loop == loop)
-        {
-            // Wakeup
-            task_resume(task);
-        }
-        else
-        {
-            // Post
-            error = task_post(task, loop);
-            if (error)
-            {
-                /* handle error */
-            }
-        }        
-        
-        task = io_loop_fetch_next_task(loop);
-    }
-}
-
 int io_loop_init(io_loop_t* loop)
 {
     int error;
@@ -160,7 +107,7 @@ io_loop_t* io_loop_current()
     return get_thread_loop();
 }
 
-static int io_loop_run(io_loop_t* loop)
+int io_loop_run(io_loop_t* loop)
 {
 #define IO_MAX_EVENTS 60
 
@@ -266,82 +213,4 @@ static int io_loop_run(io_loop_t* loop)
 
     set_thread_loop(0);
     return 0;
-}
-
-static IO_THREAD_TYPE io_thread_entry(void* arg)
-{
-    io_loop_t* loop = (io_loop_t*)arg;
-
-    io_loop_run(loop);
-
-    return 0;
-}
-
-/*
- * API
- */
-
-int io_loop_start(io_loop_t** loop)
-{
-    pthread_t thread;
-    int error = 0;
-
-    *loop = 0;
-
-    *loop = (io_loop_t*)io_malloc(sizeof (io_loop_t));
-    if (*loop == 0)
-    {
-        return errno;
-    }
-
-    error = io_loop_init(*loop);
-    if (error)
-    {
-        io_free(*loop);
-        *loop = 0;
-        return error;
-    }
-
-    // Keep reference
-    io_loop_ref(*loop);
-
-    error = io_thread_create(io_thread_entry, *loop);
-    if (error)
-    {
-        io_loop_cleanup(*loop);
-        io_free(*loop);
-
-        *loop = 0;
-    }
-
-    return error;
-}
-
-int io_run(io_loop_fn entry, void* arg)
-{
-    int error;
-    io_loop_t loop;
-
-    error = io_event_init();
-    if (error)
-    {
-        return error;
-    }
-
-    error = io_loop_init(&loop);
-    if (error)
-    {
-        io_event_shutdown();
-        return error;
-    }
-
-    io_loop_ref(&loop);
-
-    loop.entry = entry;
-    loop.arg = arg;
-
-    error = io_loop_run(&loop);
-    io_event_shutdown();
-
-    return error;
 }

@@ -605,7 +605,11 @@ static void io_stream_processor(io_stream_t* stream, int events)
     }
 }
 
-static int io_stream_attach(io_stream_t* stream)
+/*
+ * Internal API
+ */
+
+int io_stream_attach(io_stream_t* stream)
 {
     int error = 0;
 
@@ -615,7 +619,6 @@ static int io_stream_attach(io_stream_t* stream)
     }
 
     stream->loop = io_loop_current();
-    io_loop_ref(stream->loop);
 
     if (atomic_load64(&stream->loop->shutdown))
     {
@@ -631,12 +634,17 @@ static int io_stream_attach(io_stream_t* stream)
                             &stream->platform.e);
     }
     
+    if (error)
+    {
+        stream->loop = 0;
+    }
+    else
+    {
+        io_loop_ref(stream->loop);
+    }
+
     return error;
 }
-
-/*
- * Internal API
- */
 
 void io_stream_init(io_stream_t* stream)
 {
@@ -670,105 +678,6 @@ void io_stream_init(io_stream_t* stream)
 /*
  * Public API
  */
-
-size_t io_stream_read(io_stream_t* stream, char* buffer, size_t length, int exact)
-{
-    size_t done = 0;
-    int error;
-
-    if (length == 0)
-    {
-        return length;
-    }
-
-    if (exact)
-    {
-        return io_stream_read_exact(stream, buffer, length);
-    }
-
-    if (stream->info.status.read_timeout ||
-        stream->info.status.error ||
-        stream->info.status.eof ||
-        stream->info.status.closed ||
-        stream->info.status.peer_closed ||
-        stream->info.status.shutdown)
-    {
-        return 0;
-    }
-
-    error = io_stream_attach(stream);
-    if (error)
-    {
-        stream->info.status.error = error;
-        return 0;
-    }
-
-    if (atomic_load64(&stream->loop->shutdown))
-    {
-        stream->info.status.shutdown = 1;
-        stream->filters.head->on_status(stream->filters.head);
-        return 0;
-    }
-
-    if (stream->unread.length > 0)
-    {
-        if (stream->unread.length <= length)
-        {
-            done = stream->unread.length;
-            memcpy(buffer, stream->unread.buffer + stream->unread.offset,
-                stream->unread.length);
-            io_free(stream->unread.buffer);
-            stream->unread.length = 0;
-        }
-        else
-        {
-            done = length;
-            memcpy(buffer, stream->unread.buffer + stream->unread.offset,
-                length);
-            stream->unread.offset += length;
-            stream->unread.length -= length;
-        }
-
-        return done;
-    }
-
-    return stream->filters.head->on_read(stream->filters.head, buffer, length);
-}
-
-size_t io_stream_write(io_stream_t* stream, const char* buffer, size_t length)
-{
-    int error;
-
-    if (length == 0)
-    {
-        return length;
-    }
-
-    if (stream->info.status.write_timeout ||
-        stream->info.status.error ||
-        stream->info.status.closed ||
-        stream->info.status.peer_closed ||
-        stream->info.status.shutdown)
-    {
-        return 0;
-    }
-
-    error = io_stream_attach(stream);
-    if (error)
-    {
-        stream->info.status.error = error;
-        return 0;
-    }
-
-    if (atomic_load64(&stream->loop->shutdown))
-    {
-        stream->info.status.shutdown = 1;
-        stream->filters.head->on_status(stream->filters.head);
-        return 0;
-    }
-
-    return stream->filters.head->on_write(stream->filters.head, buffer, length);
-}
 
 int io_stream_delete(io_stream_t* stream)
 {

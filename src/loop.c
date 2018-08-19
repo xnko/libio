@@ -25,6 +25,9 @@
 #include "memory.h"
 #include "task.h"
 #include "time.h"
+#include "thread.h"
+#include "event.h"
+#include "tcp.h"
 
 typedef struct io_exec_t {
     io_loop_t* dest;
@@ -43,9 +46,92 @@ static void io_loop_exec_entry(io_loop_t* loop, void* arg)
     io_loop_post_task(exec->loop, exec->task);
 }
 
+
+task_t* io_loop_fetch_next_task(io_loop_t* loop)
+{
+    mpscq_node_t* node;
+    task_t* task;
+    
+    node = mpscq_pop(&loop->tasks);
+    task = container_of(node, task_t, node);
+
+    return task;
+}
+
+void io_loop_process_tasks(io_loop_t* loop)
+{
+    task_t* task;
+    int error;
+
+    task = io_loop_fetch_next_task(loop);
+    while (task != 0)
+    {
+        if (task->loop == loop)
+        {
+            // Wakeup
+            task_resume(task);
+        }
+        else
+        {
+            // Post
+            error = task_post(task, loop);
+            if (error)
+            {
+                /* handle error */
+            }
+        }        
+        
+        task = io_loop_fetch_next_task(loop);
+    }
+}
+
+IO_THREAD_TYPE io_thread_entry(void* arg)
+{
+    io_loop_t* loop = (io_loop_t*)arg;
+
+    io_loop_run(loop);
+
+    return 0;
+}
+
 /*
  * Public API
  */
+
+int io_loop_start(io_loop_t** loop)
+{
+    int error = 0;
+
+    *loop = 0;
+
+    *loop = (io_loop_t*)io_malloc(sizeof (io_loop_t));
+    if (*loop == 0)
+    {
+        return errno;
+    }
+
+    error = io_loop_init(*loop);
+    if (error)
+    {
+        io_free(*loop);
+        *loop = 0;
+        return error;
+    }
+
+    // Keep reference
+    io_loop_ref(*loop);
+
+    error = io_thread_create(io_thread_entry, *loop);
+    if (error)
+    {
+        io_loop_cleanup(*loop);
+        io_free(*loop);
+
+        *loop = 0;
+    }
+
+    return error;
+}
 
 int io_loop_stop(io_loop_t* loop)
 {
@@ -193,4 +279,39 @@ int io_loop_idle(io_loop_t* loop, uint64_t milliseconds)
 
     // Reached
     return 0;
+}
+
+int io_run(io_loop_fn entry, void* arg)
+{
+	int error;
+	io_loop_t loop;
+
+	error = io_tcp_init();
+	if (error)
+	{
+		return error;
+	}
+
+	error = io_event_init();
+	if (error)
+	{
+		return error;
+	}
+
+	error = io_loop_init(&loop);
+	if (error)
+	{
+		io_event_shutdown();
+		return error;
+	}
+
+	io_loop_ref(&loop);
+
+	loop.entry = entry;
+	loop.arg = arg;
+
+	error = io_loop_run(&loop);
+	io_event_shutdown();
+
+	return error;
 }

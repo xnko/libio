@@ -29,6 +29,8 @@ extern "C" {
 #include "io.h"
 #include "stream.h"
 
+int io_tcp_init();
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

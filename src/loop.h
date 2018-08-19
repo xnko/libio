@@ -87,7 +87,6 @@ typedef struct io_loop_t {
         int fd;
         struct epoll_event event;
     } wakeup;
-
 #else
 #   error Not implemented
 #endif
@@ -120,7 +119,10 @@ static uint64_t io_loop_nearest_event_time(io_loop_t* loop)
 int io_loop_init(io_loop_t* loop);
 int io_loop_cleanup(io_loop_t* loop);
 int io_loop_wakeup(io_loop_t* loop);
+int io_loop_run(io_loop_t* loop);
 io_loop_t* io_loop_current();
+
+void io_loop_process_tasks(io_loop_t* loop);
 
 static int io_loop_post_task(io_loop_t* loop, task_t* task)
 {
