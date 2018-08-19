@@ -145,6 +145,9 @@
     <ClCompile Include="src\fs-windows.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\io.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\task\asm.s">

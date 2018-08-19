@@ -19,20 +19,51 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef IO_FS_H_INCLUDED
-#define IO_FS_H_INCLUDED
+#include "loop.h"
+#include "event.h"
+#include "threadpool.h"
+#include "tcp.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+int io_run(io_loop_fn entry, void* arg)
+{
+	int error;
+	io_loop_t loop;
 
-#include "io.h"
-#include "stream.h"
+	error = io_tcp_init();
+	if (error)
+	{
+		return error;
+	}
 
-int io_file_close(io_stream_t* stream);
+    error = io_threadpool_init();
+    if (error)
+    {
+        return error;
+    }
 
-#ifdef __cplusplus
-} // extern "C"
-#endif
+	error = io_event_init();
+	if (error)
+	{
+        io_threadpool_shutdown();
+		return error;
+	}
 
-#endif // IO_FS_H_INCLUDED
+	error = io_loop_init(&loop);
+	if (error)
+	{
+		io_event_shutdown();
+        io_threadpool_shutdown();
+		return error;
+	}
+
+	io_loop_ref(&loop);
+
+	loop.entry = entry;
+	loop.arg = arg;
+
+	error = io_loop_run(&loop);
+	io_event_shutdown();
+    io_threadpool_shutdown();
+
+	return error;
+}

@@ -1,12 +1,10 @@
-## Introduction
+# libio
 
-A stackful task/coroutine library
+libio is a cross platform high performance io library written in C. It
+provides ability to write event driven servers and applications
+with continuous code without callback hell.
 
-- Cross platform
-- Zero configuration
-- Zero setup
-- Blazing fast
-- Memory efficient (with autogrow stacks)
+Alpha version
 
 ## CLI
 
@@ -24,175 +22,65 @@ A stackful task/coroutine library
 > make uninstall
 ```
 
+## Samples
+
+```
+> make
+> bin/file-server samples/todomvc/
+# open browser and navigate to http://localhost:8080
+```
+
 ## API Reference
 
-Basically the whole include file :)
-
 ```c
-// All calls return 0 on success and errno on failure
+// All 'int' calls return 0 on success and errno on failure
 
-typedef struct task_t task_t;
-typedef void (*task_fn)(task_t* task, void* arg);
+typedef struct io_loop_t io_loop_t;
+typedef void (*io_loop_fn)(io_loop_t* loop, void* arg);
 
-// Create a new task with entry point and argument
-int task_create(task_t** task, task_fn entry, void* arg);
+int io_loop_start(io_loop_t** loop);
+int io_loop_stop(io_loop_t* loop);
+int io_loop_ref(io_loop_t* loop);
+int io_loop_unref(io_loop_t* loop);
+int io_loop_post(io_loop_t* loop, io_loop_fn entry, void* arg);
+int io_loop_exec(io_loop_t* loop, io_loop_fn entry, void* arg);
+int io_loop_sleep(uint64_t milliseconds);
+int io_loop_idle(io_loop_t* loop, uint64_t milliseconds);
 
-// Delete the task
-int task_delete(task_t* task);
 
-// Yield a value to caller 
-int task_yield(void* value);
+typedef struct io_event_t io_event_t;
 
-// Run task as a generator
-int task_next(task_t* task, void** yield);
+int io_event_create(io_event_t** event);
+int io_event_delete(io_event_t* event);
+int io_event_notify(io_event_t* event);
+int io_event_wait(io_event_t* event);
 
-// Post a task to current thread
-int task_post(task_fn entry, void* arg);
 
-// Suspend the current task, and resume main task
-int task_suspend();
+typedef struct io_stream_t io_stream_t;
 
-// Resume the supended task
-int task_resume(task_t* task);
-```
+int io_stream_create(io_stream_t** stream); // Creates a memory stream
+int io_stream_close(io_stream_t* stream);
+int io_stream_info(io_stream_t* stream, io_stream_info_t** info);
+size_t io_stream_read(io_stream_t* stream, char* buffer, size_t length, int exact);
+size_t io_stream_unread(io_stream_t* stream, const char* buffer, size_t length);
+size_t io_stream_write(io_stream_t* stream, const char* buffer, size_t length);
+int io_stream_pipe(io_stream_t* from, io_stream_t* to, size_t chunk_size, size_t* transferred);
 
-## Examples
 
-```c
-// Print fibonacci numbers
+typedef struct io_tcp_listener_t io_tcp_listener_t;
 
-#include <stdio.h>
-#include "task/task.h"
+int io_tcp_listen(io_tcp_listener_t** listener, const char* ip, int port, int backlog);
+int io_tcp_shutdown(io_tcp_listener_t* listener);
+int io_tcp_accept(io_stream_t** stream, io_tcp_listener_t* listener);
+int io_tcp_connect(io_stream_t** stream, const char* ip, int port, uint64_t timeout);
 
-void fibonacci(task_t* task, void* arg)
-{
-    int series, first = 0, second = 1, next, c;
 
-    series = *(int*)arg;
+int io_file_create(const char* path);
+int io_file_delete(const char* path);
+int io_file_open(io_stream_t** stream, const char* path, io_file_options_t options);
 
-    for (c = 0; c < series; ++c)
-    {
-        if (c <= 1)
-            next = c;
-        else
-        {
-            next = first + second;
-            first = second;
-            second = next;
-        }
-
-        task_yield(&next);
-    }
-}
-
-void main()
-{
-    task_t* task;
-    int* next;
-    int series = 30;
-
-    task_create(&task, fibonacci, &series);
-    
-    while (!task_next(task, (void**)&next))
-    {
-        printf("%d\r\n", *next);
-    }
-
-    task_delete(task);
-}
-```
-
-```c
-// Print permutations
-
-#include <stdio.h>
-#include "task/task.h"
-
-static char series[] = { 'a', 'b', 'c', 'd', 0 };
-
-void swap(char* x, char* y)
-{
-    char temp;
-    temp = *x;
-    *x = *y;
-    *y = temp;
-}
-
-void permute(task_t* task, void* arg)
-{
-    task_t* permuter;
-    int index = arg ? *(int*)arg : 0;
-    int next = index + 1;
-    int i;
-
-    if (series[next] == 0)
-    {
-        task_yield(0);
-        return;
-    }
-
-    for (i = index; series[i]; ++i)
-    {
-        swap(series + index, series + i);
-
-        task_create(&permuter, permute, &next);
-        while (!task_next(permuter, 0))
-        {
-            task_yield(0);
-        }
-        task_delete(permuter);
-
-        swap(series + index, series + i);
-    }
-}
-
-void main()
-{
-    task_t* permuter;
-
-    task_create(&permuter, permute, 0);
-    while (!task_next(permuter, 0))
-    {
-        printf("%s\r\n", series);
-    }
-    task_delete(permuter);
-}
-```
-
-```c
-// Ping pong
-
-#include <stdio.h>
-#include "task/task.h"
-
-void pong(task_t* task, void* arg)
-{
-    *((task_t**)arg) = task;
-
-    int iteration = 1;
-
-    while (1)
-    {
-        task_suspend();
-
-        printf("pong %d\r\n", iteration++);
-    }
-}
-
-void main()
-{
-    int iteration = 0;
-    task_t* ponger;
-
-    task_post(pong, &ponger);
-
-    while (iteration++ < 30)
-    {
-        printf("ping %d\r\n", iteration);
-
-        task_resume(ponger);
-    }
-}
+// main entry
+int io_run(io_loop_fn entry, void* arg);
 ```
 
 ## Platforms
@@ -204,7 +92,6 @@ Tested on
 ## ToDos
 
 - Test on all platforms with different architectures
-- Compare performance with other libraries
 
 ## Contacts
 

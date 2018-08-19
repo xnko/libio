@@ -19,6 +19,7 @@ set(SOURCES
 	src/thread.c
 	src/threadpool.c
 	src/time.c
+	src/io.c
 )
 
 if(WIN32)

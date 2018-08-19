@@ -24,6 +24,7 @@
 #include "time.h"
 #include "stopwatch.h"
 #include "stream.h"
+#include "fs.h"
 
  /* read/write request */
 typedef struct io_stream_req_t {
@@ -459,7 +460,7 @@ void io_stream_init(io_stream_t* stream)
  * Public API
  */
 
-int io_stream_delete(io_stream_t* stream)
+int io_stream_close(io_stream_t* stream)
 {
 	int error = 0;
 
@@ -471,7 +472,7 @@ int io_stream_delete(io_stream_t* stream)
 	if (stream->info.type == IO_STREAM_FILE)
 	{
 		stream->info.status.closed = 1;
-		CloseHandle((HANDLE)stream->fd);
+		io_file_close(stream);
 		stream->fd = 0;
 	}
 	else if (stream->info.type == IO_STREAM_TCP)

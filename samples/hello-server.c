@@ -38,13 +38,12 @@
 void on_connection(io_loop_t* loop, io_stream_t* stream)
 {
     char buffer[1024 * 8];
-    size_t tansferred;
 
     io_stream_info_t* info;
 
     io_stream_info(stream, &info);
 
-    tansferred = io_stream_read(stream, buffer, sizeof(buffer), 0);
+    io_stream_read(stream, buffer, sizeof(buffer), 0);
 
     if (info->status.closed ||
         info->status.peer_closed ||
@@ -60,14 +59,14 @@ void on_connection(io_loop_t* loop, io_stream_t* stream)
     }
     else
     {
-        tansferred = io_stream_write(stream, RESPONSE, sizeof(RESPONSE) - 1);
+        io_stream_write(stream, RESPONSE, sizeof(RESPONSE) - 1);
         if (info->status.error)
         {
             printf("%s\r\n", strerror(info->status.error));
         }
     }
 
-    io_stream_delete(stream);
+    io_stream_close(stream);
 }
 
 void io_main(io_loop_t* loop, void* arg)

@@ -26,6 +26,7 @@
 #include "moment.h"
 #include "stopwatch.h"
 #include "task.h"
+#include "fs.h"
 #include "loop-linux.h"
 
 typedef struct io_tcp_read_req_t {
@@ -679,7 +680,7 @@ void io_stream_init(io_stream_t* stream)
  * Public API
  */
 
-int io_stream_delete(io_stream_t* stream)
+int io_stream_close(io_stream_t* stream)
 {
     int error = 0;
 
@@ -694,7 +695,7 @@ int io_stream_delete(io_stream_t* stream)
     else if (stream->info.type == IO_STREAM_FILE)
     {
         stream->info.status.closed = 1;
-        io_close(stream->fd);
+        io_file_close(stream);
     }
     else if (stream->info.type == IO_STREAM_TCP)
     {

@@ -26,6 +26,7 @@
 #include "task.h"
 #include "time.h"
 #include "thread.h"
+#include "threadpool.h"
 #include "event.h"
 #include "tcp.h"
 
@@ -279,39 +280,4 @@ int io_loop_idle(io_loop_t* loop, uint64_t milliseconds)
 
     // Reached
     return 0;
-}
-
-int io_run(io_loop_fn entry, void* arg)
-{
-	int error;
-	io_loop_t loop;
-
-	error = io_tcp_init();
-	if (error)
-	{
-		return error;
-	}
-
-	error = io_event_init();
-	if (error)
-	{
-		return error;
-	}
-
-	error = io_loop_init(&loop);
-	if (error)
-	{
-		io_event_shutdown();
-		return error;
-	}
-
-	io_loop_ref(&loop);
-
-	loop.entry = entry;
-	loop.arg = arg;
-
-	error = io_loop_run(&loop);
-	io_event_shutdown();
-
-	return error;
 }

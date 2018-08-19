@@ -120,7 +120,7 @@ typedef struct io_stream_info_t {
 typedef struct io_stream_t io_stream_t;
 
 IO_API int io_stream_create(io_stream_t** stream); // Creates a memory stream
-IO_API int io_stream_delete(io_stream_t* stream);
+IO_API int io_stream_close(io_stream_t* stream);
 IO_API int io_stream_info(io_stream_t* stream, io_stream_info_t** info);
 IO_API size_t io_stream_read(io_stream_t* stream, char* buffer, size_t length, int exact);
 IO_API size_t io_stream_unread(io_stream_t* stream, const char* buffer, size_t length);
@@ -156,8 +156,9 @@ typedef struct io_path_info_t {
     uint64_t size;
     uint64_t time_create;
     uint64_t time_access;
-    int type; // file or directory
+    uint64_t time_modified;
     int attributes;
+    unsigned int is_file : 1;
 } io_path_info_t;
 
 IO_API int io_path_info_get(const char* path, io_path_info_t* info);

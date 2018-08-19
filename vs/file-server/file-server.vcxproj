@@ -20,32 +20,32 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{60EB1C2C-F1EF-4842-88DB-9C9E6EAC11E4}</ProjectGuid>
-    <RootNamespace>io</RootNamespace>
+    <ProjectGuid>{F0CE1A82-8D17-40B4-8F68-1D0EAAA0A64F}</ProjectGuid>
+    <RootNamespace>helloserver</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -53,7 +53,6 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -78,11 +77,11 @@
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>build\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>build\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>build\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -92,7 +91,6 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalOptions>/D IO_BUILD_SHARED %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -101,7 +99,6 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalOptions>/D IO_BUILD_SHARED %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -112,7 +109,6 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalOptions>/D IO_BUILD_SHARED %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -127,7 +123,6 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalOptions>/D IO_BUILD_SHARED %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -135,63 +130,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\io.h" />
-    <ClInclude Include="src\atomic.h" />
-    <ClInclude Include="src\event.h" />
-    <ClInclude Include="src\fs.h" />
-    <ClInclude Include="src\io.h" />
-    <ClInclude Include="src\list.h" />
-    <ClInclude Include="src\loop.h" />
-    <ClInclude Include="src\memory.h" />
-    <ClInclude Include="src\moment.h" />
-    <ClInclude Include="src\mpscq.h" />
-    <ClInclude Include="src\performance.h" />
-    <ClInclude Include="src\platform.h" />
-    <ClInclude Include="src\pool.h" />
-    <ClInclude Include="src\rbtree.h" />
-    <ClInclude Include="src\stopwatch.h" />
-    <ClInclude Include="src\stream.h" />
-    <ClInclude Include="src\task.h" />
-    <ClInclude Include="src\task\386-ucontext.h" />
-    <ClInclude Include="src\task\amd64-ucontext.h" />
-    <ClInclude Include="src\task\context.h" />
-    <ClInclude Include="src\task\mips-ucontext.h" />
-    <ClInclude Include="src\task\power-ucontext.h" />
-    <ClInclude Include="src\task\win-ucontext.h" />
-    <ClInclude Include="src\tcp.h" />
-    <ClInclude Include="src\thread.h" />
-    <ClInclude Include="src\threadpool.h" />
-    <ClInclude Include="src\time.h" />
+    <ClCompile Include="..\..\samples\file-server.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\event.c" />
-    <ClCompile Include="src\fs-windows.c" />
-    <ClCompile Include="src\io.c" />
-    <ClCompile Include="src\loop-windows.c" />
-    <ClCompile Include="src\loop.c" />
-    <ClCompile Include="src\memory.c" />
-    <ClCompile Include="src\moment.c" />
-    <ClCompile Include="src\pool.c" />
-    <ClCompile Include="src\rbtree.c" />
-    <ClCompile Include="src\stopwatch.c" />
-    <ClCompile Include="src\stream-windows.c" />
-    <ClCompile Include="src\stream.c" />
-    <ClCompile Include="src\task\task.c" />
-    <ClCompile Include="src\tcp-windows.c" />
-    <ClCompile Include="src\thread.c" />
-    <ClCompile Include="src\threadpool.c" />
-    <ClCompile Include="src\time.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="src\task\asm.s" />
-    <MASM Include="src\task\win64.asm">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </DeploymentContent>
-      <FileType>Document</FileType>
-    </MASM>
+    <ProjectReference Include="..\..\io.vcxproj">
+      <Project>{60eb1c2c-f1ef-4842-88db-9c9e6eac11e4}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
   </ImportGroup>
 </Project>
