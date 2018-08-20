@@ -52,6 +52,10 @@ IO_API void io_set_allocator(
     void* (*realloc_fn)(void* ptr, size_t size),
     void  (*free_fn)(void* ptr));
 
+IO_API void* io_malloc(size_t size);
+IO_API void* io_calloc(size_t count, size_t size);
+IO_API void* io_realloc(void* ptr, size_t size);
+IO_API void  io_free(void* ptr);
 
 // Loop
 

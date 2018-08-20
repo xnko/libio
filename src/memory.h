@@ -26,12 +26,7 @@
 extern "C" {
 #endif
 
-#include <stddef.h> // size_t
-
-void* io_malloc(size_t size);
-void* io_calloc(size_t count, size_t size);
-void* io_realloc(void* ptr, size_t size);
-void  io_free(void* ptr);
+#include "io.h"
 
 #ifdef __cplusplus
 } // extern "C"
