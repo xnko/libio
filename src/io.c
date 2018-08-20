@@ -24,7 +24,7 @@
 #include "threadpool.h"
 #include "tcp.h"
 
-#if IO_BUILD_SHARED
+#if PLATFORM_WINDOWS && IO_BUILD_SHARED
 
 BOOL WINAPI DllMain(HINSTANCE hDll, DWORD dwReason, LPVOID lpReserved)
 {
