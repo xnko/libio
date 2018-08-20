@@ -6,6 +6,12 @@ with continuous code without callback hell.
 
 Alpha version
 
+## Aim of the project
+- Simplify network programming in C
+- Same API for differnet platforms
+- Hide complexity and provide simple and intuitive API
+- Make high performance a default option
+
 ## CLI
 
 ```bash
